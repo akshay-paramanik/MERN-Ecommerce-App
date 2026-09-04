@@ -17,13 +17,13 @@ const paymentController = {
                 orderId: order.id,
                 amount: order.amount,
                 currency: order.currency,
-                key: process.env.RAZORPAY_KEY
+                key: process.env.RAZORPAY_KEY_ID
             })
 
 
         }catch(err){
-            console.error("Order Creation Error:", error);
-    res.status(500).json({ success: false, message: "Payment initiation failed" });
+                console.error("Order Creation Error:", err);
+                res.status(500).json({ success: false, message: "Payment initiation failed" });
         }
         }
 }

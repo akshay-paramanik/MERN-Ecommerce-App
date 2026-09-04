@@ -1,34 +1,41 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { GlobalState } from '../../../GlobalState';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import configURL from '../../../configURL';
 import axios from 'axios';
+import loadRazorpay from '../../../utils/loadRazorpay';
 
 function Cart() {
   const state = useContext(GlobalState);
   const [cart] = state.userAPI.cart;
-  const addOrder = state.userAPI.addOrder;
+  const checkoutOrder = state.userAPI.checkoutOrder;
   const removeFromCart = state.userAPI.removeFromCart;
   const [isLogged] = state.userAPI.isLogged;
   const [isAdmin] = state.userAPI.isAdmin;
+  const [products] = state.productsAPI.products;
+  const navigate = useNavigate();
 
-  const [amount, setAmount] = useState(0);
-  const [formData, setFormData] = useState({
-    address: '',
-    totalAmount: 0,
-  });
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Calculate total amount whenever cart changes
-  useEffect(() => {
-    const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    setAmount(total);
-    setFormData(prev => ({ ...prev, totalAmount: total }));
-  }, [cart]);
+  const cartProducts = useMemo(() => cart.map(item => {
+    const productId = item.product?._id || item.product;
+    const product = products.find(item => item._id.toString() === productId.toString());
+    return product ? { ...product, quantity: item.quantity, cartProductId: productId } : null;
+  }).filter(Boolean), [cart, products]);
 
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const amount = useMemo(
+    () => cartProducts.reduce((total, item) => total + item.price * item.quantity, 0),
+    [cartProducts]
+  );
+
+  const orderItems = useMemo(
+    () => cart.map(item => ({
+      productId: item.product?._id || item.product,
+      quantity: item.quantity || 1
+    })),
+    [cart]
+  );
+
   if (!isLogged) {
     return (
       <>
@@ -48,11 +55,11 @@ function Cart() {
   }
 
   const handlePayment = async () => {
-    if (formData.address.trim() === "") {
-  alert("Please enter your full address before placing the order.");
-  return;
-}
+    if (isProcessing || amount <= 0 || cartProducts.length !== cart.length) return;
+
+    setIsProcessing(true);
     try {
+      await loadRazorpay();
       const res = await axios.post(`${configURL}/api/payment/create-order`, { amount });
 
       const options = {
@@ -60,45 +67,38 @@ function Cart() {
         amount: res.data.amount,
         currency: res.data.currency,
         name: "Strong Spark",
-        description: "Test Payment",
+        description: "Order payment",
         order_id: res.data.orderId,
-        handler: function (response) {
-          placeOrder()
-          alert("Payment Successful!");
-          console.log(response);
+        handler: async function (response) {
+          try {
+            await checkoutOrder(
+              orderItems,
+              response.razorpay_payment_id,
+              response.razorpay_order_id
+            );
+            alert("Payment successful and order placed.");
+            navigate('/');
+            navigate('/my-orders');
+          } catch (error) {
+            alert(error.message);
+          } finally {
+            setIsProcessing(false);
+          }
         },
         theme: { color: "#2C6EE0" },
       };
 
       const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', () => {
+        setIsProcessing(false);
+        alert("Payment failed. Your order was not placed.");
+      });
+      rzp.on('modal.closed', () => setIsProcessing(false));
       rzp.open();
     } catch (error) {
-      alert("Payment Failed");
-    console.log(error);
-    
-    }
-  };
-
-
-
-  const placeOrder = async () => {
-    try {
-      // Create order items from cart
-      const orderItems = cart.map(item => ({
-        title: item.title,
-        images: item.images,
-        price: item.price,
-        product_id: item.product_id,
-        quantity: item.quantity || 1
-      }));
-
-      await addOrder(orderItems, formData);
-      alert("Order placed successfully");
-      <Navigate to='/' />
-
-    } catch (err) {
-      console.error("Order failed:", err);
-      alert("Order failed");
+      setIsProcessing(false);
+      alert(error.response?.data?.message || error.message || "Payment failed");
+      console.error(error);
     }
   };
 
@@ -110,8 +110,8 @@ function Cart() {
 
   return (
     <div>
-      {cart.map((prd, index) => (
-        <div key={index} className='detail'>
+      {cartProducts.map(prd => (
+        <div key={prd.cartProductId} className='detail'>
           <div className='product_detail_img'>
             <img src={prd.images} alt='' />
           </div>
@@ -124,23 +124,16 @@ function Cart() {
             <p>{prd.description}</p>
             <p>{prd.content}</p>
             <p>Sold: {prd.sold}</p>
-            <button className='cart' onClick={() => removeFromCart(prd._id)}>Remove</button>
+            <button className='cart' onClick={() => removeFromCart(prd.cartProductId)}>Remove</button>
           </div>
         </div>
       ))}
 
      <div className="order-summary">
-  <input
-    type="text"
-    name="address"
-    placeholder="Enter your full address"
-    onChange={handleInput}
-    value={formData.address}
-    required
-    className="address-input"
-  />
   <h3 className="total-amount">Total: ₹{amount}</h3>
-  <button className="place-order-btn" onClick={handlePayment}>Place Order</button>
+  <button className="place-order-btn" onClick={handlePayment} disabled={isProcessing}>
+    {isProcessing ? 'Processing...' : 'Pay and place order'}
+  </button>
 </div>
 
     </div>

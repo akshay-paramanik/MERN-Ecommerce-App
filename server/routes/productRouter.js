@@ -12,4 +12,7 @@ router.route('/products/:id')
 .delete(auth,authAdmin,productControl.deleteProduct)
 .put(auth,authAdmin,upload.single('images'),productControl.updateProduct)
 
+router.route('/recommend/:productId')
+.get(productControl.getRecommendations);
+
 module.exports = router;

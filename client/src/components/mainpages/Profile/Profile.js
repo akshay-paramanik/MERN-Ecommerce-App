@@ -22,7 +22,7 @@ function Profile() {
         <p><strong>Role:</strong> {isAdmin ? "Admin" : "user"}</p>
         <p><strong>Account Created:</strong> {new Date(currentUser.createdAt).toLocaleDateString()}</p>
 
-        <Link to={`/orders/${currentUser._id}`} className='.btn-order'>
+        <Link to='/my-orders' className='.btn-order'>
           View Orders
         </Link>
       </div>

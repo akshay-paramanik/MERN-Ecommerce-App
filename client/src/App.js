@@ -1,12 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Header from './components/headers/Header'
 import Pages from './components/mainpages/Pages'
 import {BrowserRouter as Router } from 'react-router-dom'
-import { DataProvider } from './GlobalState'
-import React, { useContext } from 'react';
+import { DataProvider, GlobalState } from './GlobalState'
 
-function App() {
-  const state = useContext(DataProvider);
+function AppContent() {
+  const state = useContext(GlobalState);
   const [loading] = state.loading;
 
   if (loading) {
@@ -14,13 +13,19 @@ function App() {
   }
 
   return (
-    <DataProvider>
     <Router>
     <div className='App'>
       <Header/>
       <Pages/>
     </div>
     </Router>
+  )
+}
+
+function App() {
+  return (
+    <DataProvider>
+      <AppContent />
     </DataProvider>
   )
 }

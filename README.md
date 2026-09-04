@@ -67,10 +67,11 @@ npm install
 
 Create a .env file inside the server folder:
 
-MONGO_URI=your_mongodb_uri
+MONGODB_URI=your_mongodb_uri
 RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_SECRET=your_razorpay_secret
-JWT_SECRET=your_jwt_secret
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+ACCESS_TOKEN=your_access_token_secret
+REFRESH_TOKEN=your_refresh_token_secret
 # Cloudinary configuration
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key

@@ -6,8 +6,8 @@ import configURL from '../../../configURL';
 
 function Login() {
   const state = useContext(GlobalState);
+  const [, setToken] = state.token;
   const [isLogged, setIsLogged] = state.userAPI.isLogged;
-  const [isAdmin, setIsAdmin] = state.userAPI.isAdmin;
 
   const [user, setUser] = useState({ email: '', password: '' });
   const navigate = useNavigate();
@@ -25,8 +25,8 @@ function Login() {
       });
 
       // Set global state
+      setToken(res.data.accesstoken);
       setIsLogged(true);
-      setIsAdmin(res.data.isAdmin); // assuming response has isAdmin
       localStorage.setItem('firstLogin', true);
 
       navigate('/'); // redirect to home

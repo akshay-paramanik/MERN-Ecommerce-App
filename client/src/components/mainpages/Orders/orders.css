@@ -1,0 +1,151 @@
+.orders-page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 42px 0 70px;
+  color: #1f2a35;
+}
+
+.orders-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.orders-eyebrow,
+.order-label,
+.order-card-footer span {
+  color: #75808a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.orders-header h1 {
+  margin: 6px 0;
+  color: #17212b;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1;
+}
+
+.orders-subtitle,
+.order-date,
+.orders-empty p {
+  color: #697681;
+}
+
+.orders-shop-link {
+  display: inline-block;
+  padding: 11px 16px;
+  color: #fff;
+  background: #2c6ee0;
+  border-radius: 5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.orders-summary-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 22px;
+  border: 1px solid #e2e7eb;
+  border-radius: 8px;
+  background: #f7f9fa;
+}
+
+.orders-summary-bar div {
+  padding: 18px 22px;
+  border-right: 1px solid #e2e7eb;
+}
+
+.orders-summary-bar div:last-child { border-right: 0; }
+.orders-summary-bar strong,
+.orders-summary-bar span { display: block; }
+.orders-summary-bar strong { color: #17212b; font-size: 1.4rem; }
+.orders-summary-bar span { margin-top: 3px; color: #75808a; font-size: 0.85rem; }
+
+.orders-list { display: grid; gap: 18px; }
+
+.order-card {
+  overflow: hidden;
+  border: 1px solid #e0e6ea;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(31, 42, 53, 0.06);
+}
+
+.order-card-header,
+.order-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+}
+
+.order-card-header { border-bottom: 1px solid #edf0f2; }
+.order-label { margin-bottom: 5px; color: #2c6ee0; }
+.order-date { font-size: 0.9rem; }
+
+.order-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.order-status-paid { color: #167044; background: #e5f5eb; }
+.order-status-pending { color: #8a5b00; background: #fff2ce; }
+.order-status-cancelled { color: #a12b2b; background: #fde8e8; }
+
+.order-products { padding: 4px 22px; }
+
+.order-product {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 15px;
+  padding: 16px 0;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.order-product img {
+  width: 64px;
+  height: 64px;
+  border-radius: 5px;
+  background: #f2f4f5;
+  object-fit: contain;
+}
+
+.order-product-info h2 { margin-bottom: 5px; font-size: 1rem; text-transform: capitalize; }
+.order-product-info p { margin-bottom: 5px; color: #84909a; font-size: 0.78rem; }
+.order-product-info span { color: #53616d; font-size: 0.88rem; }
+.order-product > strong { color: #17212b; }
+
+.order-card-footer { align-items: end; background: #fafbfc; }
+.order-card-footer div { display: grid; gap: 5px; min-width: 0; }
+.order-card-footer strong { max-width: 260px; overflow: hidden; color: #53616d; font-size: 0.78rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.order-total { text-align: right; }
+.order-total strong { color: #17212b; font-size: 1.25rem; font-weight: 800; }
+
+.orders-empty { padding: 80px 20px; text-align: center; border: 1px dashed #ccd5db; border-radius: 8px; }
+.orders-empty-icon { margin-bottom: 12px; color: #2c6ee0; font-size: 3rem; }
+.orders-empty h2 { margin-bottom: 8px; }
+.orders-empty p { margin-bottom: 22px; }
+
+@media (max-width: 640px) {
+  .orders-page { padding: 28px 0 50px; }
+  .orders-header { display: block; }
+  .orders-header .orders-shop-link { margin-top: 18px; }
+  .orders-summary-bar div { padding: 14px 10px; }
+  .orders-summary-bar strong { font-size: 1.1rem; }
+  .orders-summary-bar span { font-size: 0.72rem; }
+  .order-card-header, .order-card-footer { padding: 16px; }
+  .order-products { padding: 4px 16px; }
+  .order-product { grid-template-columns: 52px 1fr; gap: 11px; }
+  .order-product img { width: 52px; height: 52px; }
+  .order-product > strong { grid-column: 2; }
+}

@@ -10,11 +10,12 @@ const userRoute = require('./routes/userRoute');
 const catagoryRoute = require('./routes/catagoryRoute');
 const productRoute = require('./routes/productRouter');
 const paymentRoute = require('./routes/paymentRoute');
+require("./cron/generateAssociationRule.js");
 
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 app.use(cors({
-    origin: "https://akshayeommerce.onrender.com",
+    origin: ["http://localhost:3000", "https://akshayeommerce.onrender.com"],
     credentials: true
 }));
 app.use(bodyParser.json());
@@ -30,5 +31,8 @@ app.use('/user',userRoute);
 app.use('/api',catagoryRoute);
 app.use('/api',productRoute);
 app.use('/api/payment',paymentRoute);
+app.use('/order',require('./routes/orderRoute'));
 
-app.listen(PORT);
+app.listen(PORT,()=>{
+    console.log(`Server is running on port ${PORT}`);
+});

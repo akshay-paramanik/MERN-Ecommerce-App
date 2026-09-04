@@ -19,6 +19,7 @@ function Pages() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
         <Route path='/cart' element={<Cart/>}/>
+        <Route path='/my-orders' element={<ViewOrders/>} />
         <Route path='/details/:id' element={<DetailProduct/>} />
         <Route path='/create_product' element={<CreateProduct/>} />
         <Route path='/catagory' element={<ViewCatagory/>} />

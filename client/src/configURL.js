@@ -1,3 +1,3 @@
-const url = `https://three0daysbackend.onrender.com`;
+const url = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-module.exports = url;
+export default url;

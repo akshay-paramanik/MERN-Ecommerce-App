@@ -49,3 +49,53 @@
     letter-spacing: 2px;
     border-radius: 6px;
 }
+
+.cart-modal-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+}
+.cart-modal{
+    position: relative;
+    width: min(100%, 400px);
+    padding: 32px 24px;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+}
+.cart-modal-close{
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    color: #555;
+    font-size: 28px;
+}
+.cart-modal-check{
+    display: grid;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 14px;
+    place-items: center;
+    color: white;
+    font-size: 26px;
+    background: #238636;
+    border-radius: 50%;
+}
+.cart-modal h2{
+    margin-bottom: 8px;
+    font-size: 1.4rem;
+}
+.cart-modal p{
+    margin-bottom: 22px;
+}
+.cart-modal-button{
+    padding: 11px 20px;
+    color: white;
+    background: #333;
+    border-radius: 5px;
+}

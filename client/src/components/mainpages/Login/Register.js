@@ -6,8 +6,8 @@ import configURL from '../../../configURL';
 
 function Register() {
   const state = useContext(GlobalState);
+  const [, setToken] = state.token;
   const [isLogged, setIsLogged] = state.userAPI.isLogged;
-  const [isAdmin, setIsAdmin] = state.userAPI.isAdmin;
 
   const [user, setUser] = useState({
     name: '',
@@ -29,8 +29,8 @@ function Register() {
         withCredentials: true
       });
 
+      setToken(res.data.msg);
       setIsLogged(true);
-      setIsAdmin(res.data.isAdmin || false); // fallback to false if not present
       localStorage.setItem('firstLogin', true);
 
       navigate('/');

@@ -1,9 +1,11 @@
 import axios from 'axios';
 import configURL from '../../../configURL';
+import loadRazorpay from '../../../utils/loadRazorpay';
 
 const PaymentBTN = ({ amount }) => {
   const handlePayment = async () => {
     try {
+      await loadRazorpay();
       const res = await axios.post(`${configURL}/api/payment/create-order`, { amount });
 
       const options = {
@@ -23,9 +25,8 @@ const PaymentBTN = ({ amount }) => {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-    //   alert("Payment Failed");
-    console.log(Response);
-    
+      alert("Payment Failed");
+      console.error(error);
     }
   };
 

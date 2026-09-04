@@ -3,6 +3,9 @@ const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || process.env.ACCESS_TOKEN;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || process.env.REFRESH_TOKEN;
+
 const userController = {
     register: async (req,res)=>{
         try{
@@ -44,7 +47,7 @@ const userController = {
     
             if(!rf_token) return res.status(400).json({msg:"Login or Register First"})
 
-            jwt.verify(rf_token,process.env.REFRESH_TOKEN_SECRET,(err,user)=>{
+            jwt.verify(rf_token,refreshTokenSecret,(err,user)=>{
             if(err) return res.status(400).json({msg:"Login or register first"})
             const accesstoken = createAccessToken({id:user.id})
             // res.json({user,accesstoken})
@@ -110,14 +113,17 @@ const userController = {
 
 
             const productToAdd = req.body.product;
-            if(!productToAdd) return res.status(400).json({msg:"No product Provided"});
+            const productId = productToAdd?._id || productToAdd?.product || productToAdd;
+            if(!productId) return res.status(400).json({msg:"No product Provided"});
 
             // check with existing product
-            const existingProductCheck = user.cart.findIndex(item => item._id === productToAdd._id)
+            const existingProductCheck = user.cart.findIndex(
+                item => item.product.toString() === productId.toString()
+            );
             if(existingProductCheck >= 0){
                 user.cart[existingProductCheck].quantity += 1;
             }else{
-                user.cart.push({...productToAdd,quantity:1});
+                user.cart.push({product: productId, quantity: 1});
             }
 
             await user.save();
@@ -221,10 +227,10 @@ viewOrder: async (req, res) => {
 
 }
 const createAccessToken = (payload)=>{
-    return jwt.sign(payload,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1d'});
+    return jwt.sign(payload,accessTokenSecret,{expiresIn:'1d'});
 }
 const createRefreshToken = (payload)=>{
-    return jwt.sign(payload,process.env.REFRESH_TOKEN_SECRET,{expiresIn:'7d'});
+    return jwt.sign(payload,refreshTokenSecret,{expiresIn:'7d'});
 }
 
 module.exports = userController;

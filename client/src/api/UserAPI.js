@@ -10,6 +10,9 @@ const UserAPI = (token) => {
     const [order,setOrder] = useState([]);
     const [currentUser,setCurrentUser] = useState([]);
 
+    const getErrorMessage = (err, fallback) =>
+        err.response?.data?.message || err.response?.data?.msg || fallback;
+
     useEffect(() => {
         if (token) {
             const getUser = async () => {
@@ -36,6 +39,14 @@ const UserAPI = (token) => {
             };
             getUser();
 
+            axios.get(`${configURL}/order/my-orders`, {
+                headers: { Authorization: token }
+            }).then(res => {
+                setOrder(res.data);
+            }).catch(err => {
+                console.error(getErrorMessage(err, 'Unable to load orders'));
+            });
+
         }
     }, [token]);
 
@@ -47,15 +58,17 @@ const UserAPI = (token) => {
 
     try {
         const res = await axios.patch(`${configURL}/user/addcart`,
-            { product },
+            { product: product._id },
             { headers: { Authorization: token } }
         );
 
         // ✅ Update local cart with the latest one from the server
         setCart(res.data.cart);
+        return true;
 
     } catch (err) {
-        alert(err.response.data.msg);
+        alert(getErrorMessage(err, 'Unable to update cart'));
+        return false;
     }
 };
 
@@ -76,31 +89,43 @@ const findUser = async ()=>{
 
 
 
-const orders = async (orderItems, formData)=>{
-    if (!isLogged) return alert("Please log in first.");
+const checkoutOrder = async (cartItems, paymentId, razorpayOrderId)=>{
+    if (!isLogged) throw new Error("Please log in first.");
     try{
-        await axios.patch(`${configURL}/user/order`, {
-    cart: orderItems,
-    address: formData.address,
-    totalAmount: formData.totalAmount
-  }, {
-    headers: { Authorization: token }
-  });
-  alert("Thank you")
+        const res = await axios.post(`${configURL}/order/checkout`, {
+            cartItems,
+            paymentId,
+            razorpayOrderId
+        }, {
+            headers: { Authorization: token }
+        });
+
+        await axios.patch(`${configURL}/user/remove_cart`, { cart: [] }, {
+            headers: { Authorization: token }
+        });
+        setCart([]);
+        return res.data;
         
     }catch(err){
-        alert("error in find order");
+        throw new Error(getErrorMessage(err, 'Unable to place order'));
     }
 }
 
 const removeFromCart = async (id)=>{
-    const updatedCart = cart.filter(item => item._id !== id);
+    const updatedCart = cart.filter(item => {
+        const productId = item.product?._id || item.product;
+        return productId.toString() !== id.toString();
+    });
     setCart(updatedCart);
 
-    // sync with backend
-    await axios.patch(`${configURL}/user/remove_cart`,{cart:updatedCart},{
-        headers:{Authorization:token}
-    })
+    try {
+        await axios.patch(`${configURL}/user/remove_cart`, { cart: updatedCart }, {
+            headers:{Authorization:token}
+        });
+    } catch (err) {
+        setCart(cart);
+        alert(getErrorMessage(err, 'Unable to update cart'));
+    }
 
 }
 
@@ -112,7 +137,7 @@ const removeFromCart = async (id)=>{
         isAdmin: [isAdmin, setIsAdmin],
         cart:[cart,setCart],
         addCart: addCart,
-        addOrder:orders,
+        checkoutOrder: checkoutOrder,
         order:[order,setOrder],
         users:[users,setUsers],
         removeFromCart : removeFromCart,

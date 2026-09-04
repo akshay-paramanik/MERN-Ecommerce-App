@@ -94,8 +94,8 @@ function CreateProduct() {
           required
         >
           <option value="">-- Select --</option>
-          {catagoryName.map((ctgry, index) => (
-            <option key={index} value={ctgry.name}>
+          {catagoryName.map((ctgry) => (
+            <option key={ctgry._id} value={ctgry._id}>
               {ctgry.name}
             </option>
           ))}
