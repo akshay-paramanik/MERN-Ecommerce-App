@@ -15,7 +15,7 @@ require("./cron/generateAssociationRule.js");
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 app.use(cors({
-    origin: ["http://localhost:3000", "https://akshayeommerce.onrender.com"],
+    origin: ["http://localhost:3000", "https://akshay-shop.onrender.com"],
     credentials: true
 }));
 app.use(bodyParser.json());
