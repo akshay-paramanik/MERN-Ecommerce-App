@@ -1,3 +1,3 @@
-const url = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const url = process.env.REACT_APP_API_URL || 'https://mern-ecommerce-app-kabh.onrender.com';
 
 export default url;
